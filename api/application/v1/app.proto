@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package api;
+package application.v1;
 
 option go_package = "github.com/yitsushi/websocket-grpc-experiment/api";
 
-service Application {
-    rpc ListNamespaces(ListNamespacesRequest) returns (stream NamespaceEvent) {}
+service ApplicationService {
+    rpc ListNamespaces(ListNamespacesRequest) returns (stream ListNamespacesResponse) {}
 }
 
 message ListNamespacesRequest {}
 
-message NamespaceEvent {
+message ListNamespacesResponse {
   string type = 1;
   Namespace namespace = 2;
 }

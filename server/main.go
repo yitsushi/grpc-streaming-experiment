@@ -8,14 +8,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
-	"github.com/yitsushi/websocket-grpc-experiment/api"
+	api "github.com/yitsushi/websocket-grpc-experiment/api/application/v1"
 )
 
 type apiServer struct {
-	api.UnimplementedApplicationServer
+	api.UnimplementedApplicationServiceServer
 }
 
-func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream api.Application_ListNamespacesServer) error {
+func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream api.ApplicationService_ListNamespacesServer) error {
 	ctx := stream.Context()
 	end := make(chan bool)
 
@@ -29,7 +29,7 @@ func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream ap
 
 			time.Sleep(time.Microsecond * 1000)
 
-			stream.Send(&api.NamespaceEvent{
+			stream.Send(&api.ListNamespacesResponse{
 				Type:      "ADDED",
 				Namespace: &api.Namespace{Name: "asd"},
 			})
@@ -60,7 +60,7 @@ func main() {
 	server := &apiServer{}
 
 	// Register the server
-	api.RegisterApplicationServer(grpcServer, server)
+	api.RegisterApplicationServiceServer(grpcServer, server)
 
 	log.Printf("Starting server on address %s", lis.Addr().String())
 
