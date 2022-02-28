@@ -1,4 +1,4 @@
-JS_DIR=ui/src/api
+JS_DIR=ui/src
 
 .PHONY: proto
 proto: proto-go proto-js
@@ -12,13 +12,36 @@ proto-go:
 
 .PHONY: proto-js
 proto-js:
-	mkdir -p ${JS_DIR}
-	#protoc-gen-grpc \
-	#	--js_out=import_style=commonjs,binary:${JS_DIR} \
-	#	--grpc_out=grpc_js:${JS_DIR} \
-	#	--proto_path=api \
-	#	api/app.proto
-	protoc-gen-grpc-ts \
-		--ts_out=grpc_js:${JS_DIR} \
-		--proto_path=api \
-		api/app.proto
+	@protoc \
+		--js_out=import_style=commonjs,binary:${JS_DIR} \
+		--grpc-web_out=import_style=typescript,mode=grpcwebtext:${JS_DIR} \
+		./api/application/v1/app.proto
+
+.PHONY: docker-ui
+docker-ui:
+	@cd ui && docker build -t yitsushi/grpc-experiment-ui .
+
+.PHONY: docker-envoy
+docker-envoy:
+	@cd envoy && docker build -t yitsushi/grpc-experiment-envoy .
+
+.PHONY: docker-backend
+docker-backend:
+	@docker build -t yitsushi/grpc-experiment-backend .
+
+.PHONY: docker
+docker: docker-ui docker-envoy docker-backend
+
+.PHONY: docker-publish
+docker-publish:
+	docker push yitsushi/grpc-experiment-ui
+	docker push yitsushi/grpc-experiment-envoy
+	docker push yitsushi/grpc-experiment-backend
+
+.PHONY:
+proxy-backend: proxy-backend
+	kubectl port-forward -n dummy backend-envoy-55d4f55b6-whdm9 7070:8080
+
+.PHONY: proxy-ui
+proxy-ui:
+	kubectl port-forward -n dummy ui-d9b65958f-kb26p 8080:80

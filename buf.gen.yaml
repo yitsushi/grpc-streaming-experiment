@@ -1,6 +1,7 @@
 version: v1beta1
 plugins:
   - name: js
+  - name: js
     out: ./ui/src/api
     opt: import_style=commonjs,binary
   - name: grpc

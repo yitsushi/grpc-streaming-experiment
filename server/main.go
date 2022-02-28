@@ -11,13 +11,13 @@ import (
 	api "github.com/yitsushi/websocket-grpc-experiment/api/application/v1"
 )
 
-type apiServer struct {
-	api.UnimplementedApplicationServiceServer
-}
+type apiServer struct{}
 
 func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream api.ApplicationService_ListNamespacesServer) error {
 	ctx := stream.Context()
 	end := make(chan bool)
+
+	logrus.Info("New ListNamespaces request")
 
 	go func() {
 		for {
@@ -28,6 +28,8 @@ func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream ap
 			}
 
 			time.Sleep(time.Microsecond * 1000)
+
+			logrus.Info("Sending Response")
 
 			stream.Send(&api.ListNamespacesResponse{
 				Type:      "ADDED",
@@ -51,7 +53,7 @@ func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream ap
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":7070")
+	lis, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
