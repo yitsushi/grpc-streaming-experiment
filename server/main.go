@@ -1,41 +1,67 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
-	"time"
 
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
-	api "github.com/yitsushi/websocket-grpc-experiment/api/application/v1"
+	api "github.com/yitsushi/grpc-streaming-experiment/api/application/v1"
 )
 
-type apiServer struct{}
+type apiServer struct {
+	*api.UnimplementedApplicationServiceServer
+}
 
-func (s *apiServer) ListNamespaces(request *api.ListNamespacesRequest, stream api.ApplicationService_ListNamespacesServer) error {
+func (s *apiServer) ListPods(request *api.ListPodsRequest, stream api.ApplicationService_ListPodsServer) error {
 	ctx := stream.Context()
 	end := make(chan bool)
 
-	logrus.Info("New ListNamespaces request")
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return fmt.Errorf("get InClusterConfig: %w", err)
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return fmt.Errorf("get clientset: %w", err)
+	}
+
+	_ = clientset
+
+	watcher, err := clientset.CoreV1().Pods(request.Namespace).Watch(ctx, v1.ListOptions{Watch: true})
+	if err != nil {
+		return fmt.Errorf("start watch: %w", err)
+	}
+
+	defer watcher.Stop()
 
 	go func() {
-		for {
+		for item := range watcher.ResultChan() {
+			pod, ok := item.Object.(*corev1.Pod)
+			if ok {
+				stream.Send(&api.ListPodsResponse{
+					Type: string(item.Type),
+					Pod:  &api.Pod{Name: pod.Name},
+				})
+			} else {
+				logrus.Infof("%+v", item.Object)
+			}
+
 			select {
 			case <-ctx.Done():
 				return
 			default:
 			}
-
-			time.Sleep(time.Microsecond * 1000)
-
-			logrus.Info("Sending Response")
-
-			stream.Send(&api.ListNamespacesResponse{
-				Type:      "ADDED",
-				Namespace: &api.Namespace{Name: "asd"},
-			})
 		}
+
+		end <- true
 	}()
 
 	for {

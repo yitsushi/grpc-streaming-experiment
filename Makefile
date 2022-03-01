@@ -8,7 +8,7 @@ proto-go:
 	protoc \
 		--go_out=. --go_opt=paths=source_relative \
 		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		api/app.proto
+		./api/application/v1/app.proto
 
 .PHONY: proto-js
 proto-js:
@@ -38,10 +38,10 @@ docker-publish:
 	docker push yitsushi/grpc-experiment-envoy
 	docker push yitsushi/grpc-experiment-backend
 
-.PHONY:
-proxy-backend: proxy-backend
-	kubectl port-forward -n dummy backend-envoy-55d4f55b6-whdm9 7070:8080
+.PHONY: proxy-backend
+proxy-backend:
+	kubectl port-forward -n dummy $(shell kubectl get pods -n dummy | grep -o "backend-envoy-[^ ]*") 7070:8080
 
 .PHONY: proxy-ui
 proxy-ui:
-	kubectl port-forward -n dummy ui-d9b65958f-kb26p 8080:80
+	kubectl port-forward -n dummy $(shell kubectl get pods -n dummy | grep -o "ui-[^ ]*") 8080:80

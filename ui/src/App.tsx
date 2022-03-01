@@ -1,70 +1,67 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-import {ListNamespacesRequest, Namespace, ListNamespacesResponse} from './api/application/v1/app_pb'
+import {ListPodsRequest, Pod, ListPodsResponse} from './api/application/v1/app_pb'
 import { ApplicationServiceClient } from './api/application/v1/AppServiceClientPb'
 
-const client = new ApplicationServiceClient('http://localhost:7070', null, null)
+const client = new ApplicationServiceClient(
+  'https://backend.aurora.efertone.me',
+  null,
+  null,
+)
 
 function App() {
-  const [namespaces, setNamespaces] = React.useState<Array<Namespace>>([]);
+  const [pods, setPods] = React.useState<Array<Pod>>([]);
 
   React.useEffect(() => {
-    let data : Array<Namespace> = [];
-    let req = new ListNamespacesRequest();
-    let stream = client.listNamespaces(req, {});
+    console.log("sending request")
 
-    stream.on("data", (response : ListNamespacesResponse) => {
-      let ns = response.getNamespace()
-      if (ns != undefined) {
-        data.push(ns)
+    let data : Array<Pod> = [];
+    let req = new ListPodsRequest();
+    req.setNamespace("dummy");
+    let stream = client.listPods(req, {});
+
+    stream.on("data", (response : ListPodsResponse) => {
+      let p = response.getPod()
+      if (p !== undefined) {
+        console.log(response.getType(), p.getName())
+
+        if (response.getType() === "ADDED") {
+          data.push(p)
+        }
+
+        if (response.getType() === "DELETED") {
+          for (let idx = 0; idx < data.length; idx++) {
+            if (data[idx].getName() === p.getName()) {
+              data.splice(idx, 1);
+              break
+            }
+          }
+        }
       }
 
-      setNamespaces([...data])
-
-      console.log(`One New Offer, Total: ${data.length}`, 0.4);
+      setPods([...data])
     });
 
-    stream.on("end", async () => {
-      console.log({
-        message: "Offer Service",
-        description: "GetOfferStream completed",
-        duration: 2,
-      })
+    stream.on("end", () => {
+      console.log("Stream completed");
     });
 
-    stream.on("error", (err) =>
-      console.log({
-        message: "Offer Service",
-        description: "Error at GetOfferStream",
-        duration: 2,
-        error: err,
-      })
-    );
+    stream.on("error", (err) => {
+      console.log(err);
+    });
 
     return () => {
       stream.cancel();
     };
-  });
+  }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        {namespaces.map((item) => (
-          <div>{item.getName()}</div>
+        <h1>Pods:</h1>
+        {pods.map((item) => (
+          <div key={item.getName()}>{item.getName()}</div>
         ))}
       </header>
     </div>

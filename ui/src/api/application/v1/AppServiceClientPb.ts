@@ -35,26 +35,26 @@ export class ApplicationServiceClient {
     this.options_ = options;
   }
 
-  methodDescriptorListNamespaces = new grpcWeb.MethodDescriptor(
-    '/application.v1.ApplicationService/ListNamespaces',
+  methodDescriptorListPods = new grpcWeb.MethodDescriptor(
+    '/application.v1.ApplicationService/ListPods',
     grpcWeb.MethodType.SERVER_STREAMING,
-    api_application_v1_app_pb.ListNamespacesRequest,
-    api_application_v1_app_pb.ListNamespacesResponse,
-    (request: api_application_v1_app_pb.ListNamespacesRequest) => {
+    api_application_v1_app_pb.ListPodsRequest,
+    api_application_v1_app_pb.ListPodsResponse,
+    (request: api_application_v1_app_pb.ListPodsRequest) => {
       return request.serializeBinary();
     },
-    api_application_v1_app_pb.ListNamespacesResponse.deserializeBinary
+    api_application_v1_app_pb.ListPodsResponse.deserializeBinary
   );
 
-  listNamespaces(
-    request: api_application_v1_app_pb.ListNamespacesRequest,
-    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<api_application_v1_app_pb.ListNamespacesResponse> {
+  listPods(
+    request: api_application_v1_app_pb.ListPodsRequest,
+    metadata?: grpcWeb.Metadata): grpcWeb.ClientReadableStream<api_application_v1_app_pb.ListPodsResponse> {
     return this.client_.serverStreaming(
       this.hostname_ +
-        '/application.v1.ApplicationService/ListNamespaces',
+        '/application.v1.ApplicationService/ListPods',
       request,
       metadata || {},
-      this.methodDescriptorListNamespaces);
+      this.methodDescriptorListPods);
   }
 
 }

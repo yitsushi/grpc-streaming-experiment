@@ -16,6 +16,7 @@ static_resources:
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                 stat_prefix: ingress_http
+                stream_idle_timeout: 0s
                 access_log:
                   - name: envoy.access_loggers.file
                     typed_config:
@@ -33,6 +34,7 @@ static_resources:
                             grpc:
                           route:
                             cluster: dummy_service
+                            timeout: 0s
                       cors:
                         allow_origin_string_match:
                           - prefix: "*"
@@ -54,7 +56,7 @@ static_resources:
   clusters:
     - name: dummy_service
       type: LOGICAL_DNS
-      connect_timeout: 10s
+      connect_timeout: 120s
       lb_policy: round_robin
       load_assignment:
         cluster_name: dummy_service

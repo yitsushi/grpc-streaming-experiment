@@ -2,57 +2,61 @@ import * as jspb from 'google-protobuf'
 
 
 
-export class ListNamespacesRequest extends jspb.Message {
+export class ListPodsRequest extends jspb.Message {
+  getNamespace(): string;
+  setNamespace(value: string): ListPodsRequest;
+
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ListNamespacesRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: ListNamespacesRequest): ListNamespacesRequest.AsObject;
-  static serializeBinaryToWriter(message: ListNamespacesRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ListNamespacesRequest;
-  static deserializeBinaryFromReader(message: ListNamespacesRequest, reader: jspb.BinaryReader): ListNamespacesRequest;
+  toObject(includeInstance?: boolean): ListPodsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListPodsRequest): ListPodsRequest.AsObject;
+  static serializeBinaryToWriter(message: ListPodsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListPodsRequest;
+  static deserializeBinaryFromReader(message: ListPodsRequest, reader: jspb.BinaryReader): ListPodsRequest;
 }
 
-export namespace ListNamespacesRequest {
+export namespace ListPodsRequest {
   export type AsObject = {
+    namespace: string,
   }
 }
 
-export class ListNamespacesResponse extends jspb.Message {
+export class ListPodsResponse extends jspb.Message {
   getType(): string;
-  setType(value: string): ListNamespacesResponse;
+  setType(value: string): ListPodsResponse;
 
-  getNamespace(): Namespace | undefined;
-  setNamespace(value?: Namespace): ListNamespacesResponse;
-  hasNamespace(): boolean;
-  clearNamespace(): ListNamespacesResponse;
+  getPod(): Pod | undefined;
+  setPod(value?: Pod): ListPodsResponse;
+  hasPod(): boolean;
+  clearPod(): ListPodsResponse;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ListNamespacesResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: ListNamespacesResponse): ListNamespacesResponse.AsObject;
-  static serializeBinaryToWriter(message: ListNamespacesResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ListNamespacesResponse;
-  static deserializeBinaryFromReader(message: ListNamespacesResponse, reader: jspb.BinaryReader): ListNamespacesResponse;
+  toObject(includeInstance?: boolean): ListPodsResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ListPodsResponse): ListPodsResponse.AsObject;
+  static serializeBinaryToWriter(message: ListPodsResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListPodsResponse;
+  static deserializeBinaryFromReader(message: ListPodsResponse, reader: jspb.BinaryReader): ListPodsResponse;
 }
 
-export namespace ListNamespacesResponse {
+export namespace ListPodsResponse {
   export type AsObject = {
     type: string,
-    namespace?: Namespace.AsObject,
+    pod?: Pod.AsObject,
   }
 }
 
-export class Namespace extends jspb.Message {
+export class Pod extends jspb.Message {
   getName(): string;
-  setName(value: string): Namespace;
+  setName(value: string): Pod;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Namespace.AsObject;
-  static toObject(includeInstance: boolean, msg: Namespace): Namespace.AsObject;
-  static serializeBinaryToWriter(message: Namespace, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Namespace;
-  static deserializeBinaryFromReader(message: Namespace, reader: jspb.BinaryReader): Namespace;
+  toObject(includeInstance?: boolean): Pod.AsObject;
+  static toObject(includeInstance: boolean, msg: Pod): Pod.AsObject;
+  static serializeBinaryToWriter(message: Pod, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Pod;
+  static deserializeBinaryFromReader(message: Pod, reader: jspb.BinaryReader): Pod;
 }
 
-export namespace Namespace {
+export namespace Pod {
   export type AsObject = {
     name: string,
   }

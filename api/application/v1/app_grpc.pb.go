@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ApplicationServiceClient interface {
-	ListNamespaces(ctx context.Context, in *ListNamespacesRequest, opts ...grpc.CallOption) (ApplicationService_ListNamespacesClient, error)
+	ListPods(ctx context.Context, in *ListPodsRequest, opts ...grpc.CallOption) (ApplicationService_ListPodsClient, error)
 }
 
 type applicationServiceClient struct {
@@ -29,12 +29,12 @@ func NewApplicationServiceClient(cc grpc.ClientConnInterface) ApplicationService
 	return &applicationServiceClient{cc}
 }
 
-func (c *applicationServiceClient) ListNamespaces(ctx context.Context, in *ListNamespacesRequest, opts ...grpc.CallOption) (ApplicationService_ListNamespacesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ApplicationService_ServiceDesc.Streams[0], "/application.v1.ApplicationService/ListNamespaces", opts...)
+func (c *applicationServiceClient) ListPods(ctx context.Context, in *ListPodsRequest, opts ...grpc.CallOption) (ApplicationService_ListPodsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ApplicationService_ServiceDesc.Streams[0], "/application.v1.ApplicationService/ListPods", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &applicationServiceListNamespacesClient{stream}
+	x := &applicationServiceListPodsClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -44,17 +44,17 @@ func (c *applicationServiceClient) ListNamespaces(ctx context.Context, in *ListN
 	return x, nil
 }
 
-type ApplicationService_ListNamespacesClient interface {
-	Recv() (*ListNamespacesResponse, error)
+type ApplicationService_ListPodsClient interface {
+	Recv() (*ListPodsResponse, error)
 	grpc.ClientStream
 }
 
-type applicationServiceListNamespacesClient struct {
+type applicationServiceListPodsClient struct {
 	grpc.ClientStream
 }
 
-func (x *applicationServiceListNamespacesClient) Recv() (*ListNamespacesResponse, error) {
-	m := new(ListNamespacesResponse)
+func (x *applicationServiceListPodsClient) Recv() (*ListPodsResponse, error) {
+	m := new(ListPodsResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -62,19 +62,21 @@ func (x *applicationServiceListNamespacesClient) Recv() (*ListNamespacesResponse
 }
 
 // ApplicationServiceServer is the server API for ApplicationService service.
-// All implementations should embed UnimplementedApplicationServiceServer
+// All implementations must embed UnimplementedApplicationServiceServer
 // for forward compatibility
 type ApplicationServiceServer interface {
-	ListNamespaces(*ListNamespacesRequest, ApplicationService_ListNamespacesServer) error
+	ListPods(*ListPodsRequest, ApplicationService_ListPodsServer) error
+	mustEmbedUnimplementedApplicationServiceServer()
 }
 
-// UnimplementedApplicationServiceServer should be embedded to have forward compatible implementations.
+// UnimplementedApplicationServiceServer must be embedded to have forward compatible implementations.
 type UnimplementedApplicationServiceServer struct {
 }
 
-func (UnimplementedApplicationServiceServer) ListNamespaces(*ListNamespacesRequest, ApplicationService_ListNamespacesServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListNamespaces not implemented")
+func (UnimplementedApplicationServiceServer) ListPods(*ListPodsRequest, ApplicationService_ListPodsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListPods not implemented")
 }
+func (UnimplementedApplicationServiceServer) mustEmbedUnimplementedApplicationServiceServer() {}
 
 // UnsafeApplicationServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to ApplicationServiceServer will
@@ -87,24 +89,24 @@ func RegisterApplicationServiceServer(s grpc.ServiceRegistrar, srv ApplicationSe
 	s.RegisterService(&ApplicationService_ServiceDesc, srv)
 }
 
-func _ApplicationService_ListNamespaces_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ListNamespacesRequest)
+func _ApplicationService_ListPods_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListPodsRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ApplicationServiceServer).ListNamespaces(m, &applicationServiceListNamespacesServer{stream})
+	return srv.(ApplicationServiceServer).ListPods(m, &applicationServiceListPodsServer{stream})
 }
 
-type ApplicationService_ListNamespacesServer interface {
-	Send(*ListNamespacesResponse) error
+type ApplicationService_ListPodsServer interface {
+	Send(*ListPodsResponse) error
 	grpc.ServerStream
 }
 
-type applicationServiceListNamespacesServer struct {
+type applicationServiceListPodsServer struct {
 	grpc.ServerStream
 }
 
-func (x *applicationServiceListNamespacesServer) Send(m *ListNamespacesResponse) error {
+func (x *applicationServiceListPodsServer) Send(m *ListPodsResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -117,10 +119,10 @@ var ApplicationService_ServiceDesc = grpc.ServiceDesc{
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "ListNamespaces",
-			Handler:       _ApplicationService_ListNamespaces_Handler,
+			StreamName:    "ListPods",
+			Handler:       _ApplicationService_ListPods_Handler,
 			ServerStreams: true,
 		},
 	},
-	Metadata: "application/v1/app.proto",
+	Metadata: "api/application/v1/app.proto",
 }

@@ -40,3 +40,22 @@ spec:
           containerPort: 8080
         - name: envoy-admin
           containerPort: 9901
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backend-envoy
+  namespace: dummy
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`backend.aurora.efertone.me`) && PathPrefix(`/`)
+    services:
+    - name: backend-envoy
+      port: 80
+  tls:
+    certResolver: letsencrypt
+    domains:
+    - main: backend.aurora.efertone.me

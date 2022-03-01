@@ -38,3 +38,22 @@ spec:
         ports:
         - name: http
           containerPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ui
+  namespace: dummy
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`ui.aurora.efertone.me`) && PathPrefix(`/`)
+    services:
+    - name: ui
+      port: 80
+  tls:
+    certResolver: letsencrypt
+    domains:
+    - main: ui.aurora.efertone.me
